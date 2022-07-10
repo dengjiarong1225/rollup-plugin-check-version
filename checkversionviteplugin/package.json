@@ -4,10 +4,10 @@
   "description": "version check to reload html, for vite project",
   "main": "./dist/index.js",
   "scripts": {
-    "build": "rollup index.js --file ./dist/index.js --format umd --name rollup-plugin-check-version",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "rollup index.js --file ./dist/index.js --format umd --name rollup-plugin-check-version"
   },
-  "author": "",
+  "author": "jiarongdeng",
+  "repository": "https://github.com/dengjiarong1225/rollup-plugin-check-version",
   "license": "MIT",
   "devDependencies": {
     "@rollup/pluginutils": "^4.2.1"
