@@ -1,20 +1,27 @@
 import { createFilter } from '@rollup/pluginutils';
 
-// rollup-plugin-my-example.js
 export default function checkVersionPlugin ({ duration } = {}) {
   const filter = createFilter('index.html');
 
-  const version = `{ "version": "V${new Date().getTime()}" }`
+  const selfConfig = {
+    version: `{ "version": "V${new Date().getTime()}" }`,
+    publicPath: ''
+  }
 
   return {
-    name: 'rollup-plugin-check-version', // this name will show up in warnings and errors
+    name: 'rollup-plugin-check-version',
+    config(config) {
+      selfConfig.publicPath = config.base
+      if (selfConfig.publicPath && selfConfig.publicPath.substr(-1) !== '/') {
+        selfConfig.publicPath += '/';
+      }
+    },
 
     buildStart() {
-
       this.emitFile({
         type: 'asset',
         fileName: 'version.json',
-        source: version
+        source: selfConfig.version
       });
 
       this.emitFile({
@@ -26,7 +33,7 @@ export default function checkVersionPlugin ({ duration } = {}) {
           function autoCheckVersionPlugin() {
             var version = localStorage.getItem('appVersion');
       
-            fetch('./version.json', { headers: { 'Cache-control': 'no-cache'  } }).then(res => {
+            fetch('${selfConfig.publicPath}version.json', { headers: { 'Cache-control': 'no-cache'  } }).then(res => {
               res.json().then(json => {
                 var newVersion = json.version
                 if (newVersion !== version) {
@@ -47,9 +54,8 @@ export default function checkVersionPlugin ({ duration } = {}) {
 
     transform(code, id) {
       if (!filter(id)) return;
-
       return {
-        code: code.replace('</body>', '<script src="/checkversion.js"></script></body>'),
+        code: code.replace('</body>', `<script src="${selfConfig.publicPath}checkversion.js"></script></body>`),
         map: { mappings: '' }
       };
     }
